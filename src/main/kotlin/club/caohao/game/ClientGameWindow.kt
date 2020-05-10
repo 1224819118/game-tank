@@ -11,6 +11,8 @@ import javafx.scene.input.KeyEvent
 import javafx.scene.paint.Color
 import org.itheima.kotlin.game.core.Painter
 import org.itheima.kotlin.game.core.Window
+import util.ClientMessageUtil
+import util.MessageUtil
 import java.io.File
 
 
@@ -53,10 +55,15 @@ class ClientGameWindow :Window("坦克大战","img/icon.png",1000,1000) {
     override fun onKeyPressed(event: KeyEvent) {
         //检测人物的操作
         when(event.code){
-            KeyCode.W -> t2.move(station.UP)
-            KeyCode.S -> t2.move(station.DOWN)
-            KeyCode.A -> t2.move(station.LEFT)
-            KeyCode.D -> t2.move(station.RIGHT)
+            KeyCode.W -> {MessageUtil.queue.add("UP")
+                t2.move(station.UP) }
+            KeyCode.S ->{MessageUtil.queue.add("DOWN")
+                t2.move(station.DOWN)}
+            KeyCode.A ->{MessageUtil.queue.add("LEFT")
+                t2.move(station.LEFT)}
+            KeyCode.D ->{MessageUtil.queue.add("RIGHT")
+                t2.move(station.RIGHT)}
+            KeyCode.ENTER -> {walls.add(t2.sendBot())}
         }
     }
 
@@ -65,10 +72,21 @@ class ClientGameWindow :Window("坦克大战","img/icon.png",1000,1000) {
     }
 
     override fun onRefresh() {
-        walls.filter { it is Moveable }.forEach {move ->
-            walls.filter { it is BlockAble }.forEach{block ->
-
+        walls.filter { it is Moveable }.forEach movetag@{move ->
+            move as Moveable
+            var blockstation:station? = null
+            var blockable:BlockAble? = null
+            walls.filter { it is BlockAble }.forEach blocktag@{block ->
+                block as BlockAble
+                var willCollision = move.willCollision(block)
+                willCollision?.let {
+                    blockstation = willCollision
+                    blockable = block
+                    return@blocktag
+                }
             }
+            //找到碰撞物体了
+            move.notifyblock(blockstation,blockable)
         }
 
 
@@ -76,9 +94,14 @@ class ClientGameWindow :Window("坦克大战","img/icon.png",1000,1000) {
 
     }
 
-    fun Painter.drawObj(obj: obj){
-        //Painter.drawColor(obj.color,obj.x,obj.y,obj.width,obj.heigth)
-        Painter.drawColor(Color.GREEN,50,50,40,40)
+    fun otherOneMove(){
+        var peek = ClientMessageUtil.queue.poll()
+        when(peek){
+            "UP" -> t1.move(station.UP)
+            "DOWN" -> t1.move(station.DOWN)
+            "LEFT" -> t1.move(station.LEFT)
+            "RIGHT" -> t1.move(station.RIGHT)
+        }
     }
 
 

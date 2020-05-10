@@ -11,6 +11,7 @@ import javafx.scene.input.KeyEvent
 import javafx.scene.paint.Color
 import org.itheima.kotlin.game.core.Painter
 import org.itheima.kotlin.game.core.Window
+import util.MessageUtil
 import java.io.File
 
 
@@ -42,7 +43,7 @@ class GameWindow :Window("坦克大战","img/icon.png",1000,1000) {
     }
 
     override fun onDisplay() {
-
+        otherOneMove()
         walls.forEach {
             it.draw()
         }
@@ -53,19 +54,22 @@ class GameWindow :Window("坦克大战","img/icon.png",1000,1000) {
     override fun onKeyPressed(event: KeyEvent) {
         //检测人物的操作
         when(event.code){
-            KeyCode.W -> t1.move(station.UP)
-            KeyCode.S -> t1.move(station.DOWN)
-            KeyCode.A -> t1.move(station.LEFT)
-            KeyCode.D -> t1.move(station.RIGHT)
+            KeyCode.W -> {MessageUtil.queue.add("UP")
+                t1.move(station.UP) }
+            KeyCode.S ->{MessageUtil.queue.add("DOWN")
+                t1.move(station.DOWN)}
+            KeyCode.A ->{MessageUtil.queue.add("LEFT")
+                t1.move(station.LEFT)}
+            KeyCode.D ->{MessageUtil.queue.add("RIGHT")
+                t1.move(station.RIGHT)}
             KeyCode.ENTER -> {walls.add(t1.sendBot())}
         }
     }
 
-    fun onKeyPressed2(move: station){
-       t2.move(move)
-    }
+
 
     override fun onRefresh() {
+
         walls.filter { it is Moveable }.forEach movetag@{move ->
             move as Moveable
             var blockstation:station? = null
@@ -86,9 +90,14 @@ class GameWindow :Window("坦克大战","img/icon.png",1000,1000) {
 
     }
 
-    fun Painter.drawObj(obj: obj){
-        //Painter.drawColor(obj.color,obj.x,obj.y,obj.width,obj.heigth)
-        Painter.drawColor(Color.GREEN,50,50,40,40)
+    fun otherOneMove(){
+        var peek = MessageUtil.queue.poll()
+        when(peek){
+            "UP" -> t2.move(station.UP)
+            "DOWN" -> t2.move(station.DOWN)
+            "LEFT" -> t2.move(station.LEFT)
+            "RIGHT" -> t2.move(station.RIGHT)
+        }
     }
 
 
