@@ -1,6 +1,7 @@
 package client;
 
 import club.caohao.game.AppKt;
+import club.caohao.game.ClientAPPKt;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
@@ -16,7 +17,7 @@ public class Client {
     public static void main(String[] args) {
 
         EventLoopGroup childGroup = new NioEventLoopGroup();
-
+        ClientAPPKt.startClient();
         try {
             Bootstrap bootstrap = new Bootstrap();
             bootstrap.group(childGroup)

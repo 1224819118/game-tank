@@ -1,5 +1,6 @@
 package server;
 
+import club.caohao.game.AppKt;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
@@ -12,7 +13,7 @@ public class Server {
     public static void main(String[] args) {
         EventLoopGroup parentGroup = new NioEventLoopGroup();
         EventLoopGroup childGroup = new NioEventLoopGroup();
-
+        AppKt.start();
         try {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
             serverBootstrap.group(parentGroup,childGroup)
